@@ -375,11 +375,6 @@ pub struct Error {
 }
 
 impl Error {
-    /// Get the kind of error
-    pub fn kind(&self) -> &ErrorKind {
-        &self.kind
-    }
-
     /// Get the section of the advisory where the error occurred
     pub fn section(&self) -> Option<&str> {
         self.section.as_ref().map(AsRef::as_ref)
@@ -414,7 +409,7 @@ impl std::error::Error for Error {}
 /// Lint errors
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
-pub enum ErrorKind {
+pub(crate) enum ErrorKind {
     /// Advisory is structurally malformed
     Malformed,
 
@@ -436,14 +431,14 @@ pub enum ErrorKind {
 
 impl ErrorKind {
     /// Invalid key
-    pub fn key(name: &str) -> Self {
+    fn key(name: &str) -> Self {
         Self::InvalidKey {
             name: name.to_owned(),
         }
     }
 
     /// Invalid value
-    pub fn value(name: &str, value: impl Into<String>) -> Self {
+    fn value(name: &str, value: impl Into<String>) -> Self {
         Self::InvalidValue {
             name: name.to_owned(),
             value: value.into(),
